@@ -127,6 +127,7 @@ module TweetImport
       @tweet_cache[status_id_str] ||= Twitter.status(status_id_str)
     rescue Twitter::NotFound, Twitter::Unauthorized, Twitter::Forbidden
       @tweet_cache[status_id_str] = 'x'
+      nil
     end
 
     # Hit twitter.com to do a search. Cached.
