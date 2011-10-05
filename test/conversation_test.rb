@@ -19,8 +19,36 @@ class ConversationTest < Test::Unit::TestCase
     end
   end
 
+  def test_build_conversation_shallow_1
+    @subject.lookup('1', false)
+    assert_equal 1, @subject.statuses.size
+  end
+  def test_build_conversation_shallow_2
+    @subject.lookup('3', false)
+    assert_equal 2, @subject.statuses.size
+  end
+  def test_build_conversation_shallow_3
+    @subject.lookup('4', false)
+    assert_equal 3, @subject.statuses.size
+  end
+  def test_build_conversation_shallow_4
+    @subject.lookup('6', false)
+    assert_equal 4, @subject.statuses.size
+  end
+  def test_build_conversation_shallow_5
+    @subject.lookup('9', false)
+    assert_equal 5, @subject.statuses.size
+  end
+
   def test_build_conversation_from_an_unknown_tweet
     @subject.lookup('-1')
+    assert_equal 0, @subject.statuses.size
+    assert_equal 0, @subject.users.size
+    assert_equal 0, @subject.user_ids.size
+  end
+
+  def test_nil_input
+    @subject.lookup(nil)
     assert_equal 0, @subject.statuses.size
     assert_equal 0, @subject.users.size
     assert_equal 0, @subject.user_ids.size

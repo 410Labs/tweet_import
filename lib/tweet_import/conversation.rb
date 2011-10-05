@@ -16,16 +16,19 @@ module TweetImport
     
     # Find all tweets that are part of the "conversation" including the given tweet id. Feel free to
     # pass a String, Number, or twitter.com url.
-    def lookup(status_id_str)
-      ingest(extract_tweet_id(status_id_str))
+    def lookup(s, deep=true)
+      return unless status_id_str = extract_tweet_id(s)
+      ingest(status_id_str)
       @logger.debug "now we have the partial conversation, all the way up the original: #{first_id_str}"
-      loop do
-        @logger.debug "searching twitter for mentions of our users"
-        count = users.inject(0) do |a,user|
-          a + search_for_mentions(user.screen_name)
+      if deep
+        loop do
+          @logger.debug "searching twitter for mentions of our users"
+          count = users.inject(0) do |a,user|
+            a + search_for_mentions(user.screen_name)
+          end
+          @logger.debug "saved #{count} tweets during that pass"
+          break if count == 0
         end
-        @logger.debug "saved #{count} tweets during that pass"
-        break if count == 0
       end
       @logger.debug "all done. the conversation has #{@statuses.size} tweets amongst #{users.size} users"
       @statuses.sort! {|a,b| a.created_at <=> b.created_at }

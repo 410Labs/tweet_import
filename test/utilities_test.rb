@@ -18,4 +18,11 @@ class UtilitiesTest < Test::Unit::TestCase
   def test_tweet_id_is_returned_even_if_its_passed_as_a_number
     assert_equal '118745990760103936', extract_tweet_id(118745990760103936)
   end
+  def test_nil_is_handled
+    assert_equal nil, extract_tweet_id(nil)
+  end
+  def test_blank_is_handled
+    assert_equal nil, extract_tweet_id('')
+    assert_equal nil, extract_tweet_id(' ')
+  end
 end
