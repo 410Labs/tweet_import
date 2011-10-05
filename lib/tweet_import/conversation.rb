@@ -17,7 +17,7 @@ module TweetImport
     # Find all tweets that are part of the "conversation" including the given tweet id. Feel free to
     # pass a String, Number, or twitter.com url.
     def lookup(s, deep=true)
-      return unless status_id_str = extract_tweet_id(s)
+      return @statuses unless status_id_str = extract_tweet_id(s)
       ingest(status_id_str)
       @logger.debug "now we have the partial conversation, all the way up the original: #{first_id_str}"
       if deep
