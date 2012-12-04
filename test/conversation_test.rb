@@ -5,8 +5,9 @@ class ConversationTest < Test::Unit::TestCase
     @data = twitter_data
     @subject = TweetImport::Conversation.new
     stub(Twitter).status { |id| @data[id] }
-    stub(@subject).twitter_search { |screen_name, first_id_str|
-      @data.select { |id,status| status.text.include?("@#{screen_name}") }.select { |id,status| id.to_i >= first_id_str.to_i }.map { |id,status| status }
+    stub(@subject).twitter_search { |screen_name, first_id|
+      results = @data.select { |id,status| status.text.include?("@#{screen_name}") }.select { |id,status| id.to_i >= first_id.to_i }.map { |id,status| status }
+      Hashie::Mash.new(:statuses => results)
     }
   end
   
@@ -63,16 +64,16 @@ class ConversationTest < Test::Unit::TestCase
   #
   def twitter_data(time=Time.now)
     h = {}
-    h['1'] = Hashie::Mash.new :id_str => '1',   :in_reply_to_status_id_str => nil, :user => { :screen_name => 'aaa', :id_str => '1'}, :text => 'Initial tweet', :created_at => time
-    h['2'] = Hashie::Mash.new :id_str => '2',   :in_reply_to_status_id_str => '1', :user => { :screen_name => 'bbb', :id_str => '2'}, :text => '@aaa i disagree', :created_at => time += 60
-    h['3'] = Hashie::Mash.new :id_str => '3',   :in_reply_to_status_id_str => '1', :user => { :screen_name => 'ccc', :id_str => '3'}, :text => '@aaa i agree', :created_at => time += 60
-    h['4'] = Hashie::Mash.new :id_str => '4',   :in_reply_to_status_id_str => '3', :user => { :screen_name => 'ddd', :id_str => '4'}, :text => '@ccc how can you agree?', :created_at => time += 60
-    h['5'] = Hashie::Mash.new :id_str => '5',   :in_reply_to_status_id_str => '1', :user => { :screen_name => 'eee', :id_str => '5'}, :text => '@aaa who r u', :created_at => time += 60
-    h['6'] = Hashie::Mash.new :id_str => '6',   :in_reply_to_status_id_str => '4', :user => { :screen_name => 'aaa', :id_str => '1'}, :text => '@ddd because i can', :created_at => time += 60
-    h['7'] = Hashie::Mash.new :id_str => '7',   :in_reply_to_status_id_str => '5', :user => { :screen_name => 'aaa', :id_str => '1'}, :text => '@eee i am who i am', :created_at => time += 60
-    h['8'] = Hashie::Mash.new :id_str => '8',   :in_reply_to_status_id_str => '7', :user => { :screen_name => 'eee', :id_str => '5'}, :text => '@aaa nice one popeye', :created_at => time += 60
-    h['9'] = Hashie::Mash.new :id_str => '9',   :in_reply_to_status_id_str => '6', :user => { :screen_name => 'ddd', :id_str => '4'}, :text => '@eee you have that right', :created_at => time += 60
-    h['10'] = Hashie::Mash.new :id_str => '10', :in_reply_to_status_id_str => '9', :user => { :screen_name => 'fff', :id_str => '6'}, :text => '@ddd wtf is all this?', :created_at => time += 60
+    h['1'] = Hashie::Mash.new :id => '1',   :in_reply_to_status_id => nil, :user => { :screen_name => 'aaa', :id => '1'}, :text => 'Initial tweet', :created_at => time
+    h['2'] = Hashie::Mash.new :id => '2',   :in_reply_to_status_id => '1', :user => { :screen_name => 'bbb', :id => '2'}, :text => '@aaa i disagree', :created_at => time += 60
+    h['3'] = Hashie::Mash.new :id => '3',   :in_reply_to_status_id => '1', :user => { :screen_name => 'ccc', :id => '3'}, :text => '@aaa i agree', :created_at => time += 60
+    h['4'] = Hashie::Mash.new :id => '4',   :in_reply_to_status_id => '3', :user => { :screen_name => 'ddd', :id => '4'}, :text => '@ccc how can you agree?', :created_at => time += 60
+    h['5'] = Hashie::Mash.new :id => '5',   :in_reply_to_status_id => '1', :user => { :screen_name => 'eee', :id => '5'}, :text => '@aaa who r u', :created_at => time += 60
+    h['6'] = Hashie::Mash.new :id => '6',   :in_reply_to_status_id => '4', :user => { :screen_name => 'aaa', :id => '1'}, :text => '@ddd because i can', :created_at => time += 60
+    h['7'] = Hashie::Mash.new :id => '7',   :in_reply_to_status_id => '5', :user => { :screen_name => 'aaa', :id => '1'}, :text => '@eee i am who i am', :created_at => time += 60
+    h['8'] = Hashie::Mash.new :id => '8',   :in_reply_to_status_id => '7', :user => { :screen_name => 'eee', :id => '5'}, :text => '@aaa nice one popeye', :created_at => time += 60
+    h['9'] = Hashie::Mash.new :id => '9',   :in_reply_to_status_id => '6', :user => { :screen_name => 'ddd', :id => '4'}, :text => '@eee you have that right', :created_at => time += 60
+    h['10'] = Hashie::Mash.new :id => '10', :in_reply_to_status_id => '9', :user => { :screen_name => 'fff', :id => '6'}, :text => '@ddd wtf is all this?', :created_at => time += 60
     h
   end
   
